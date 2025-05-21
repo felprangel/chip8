@@ -50,7 +50,10 @@ int main(int argc, char *argv[])
     (void) argc;
     (void) argv;
 
-    bool sdl_initialized = init_sdl();
+    sdl_object sdl = {0};
+    config_object config = {0};
+
+    bool sdl_initialized = init_sdl(&sdl, config);
 
     if (!sdl_initialized) {
         exit(EXIT_FAILURE);
