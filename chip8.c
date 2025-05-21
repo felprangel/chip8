@@ -80,8 +80,7 @@ void handle_input(chip8_object *chip8)
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
-        switch (event.type)
-        {
+        switch (event.type) {
         case SDL_QUIT:
             chip8->state = QUIT;
             break;
