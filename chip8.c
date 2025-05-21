@@ -43,11 +43,8 @@ void cleanup(sdl_object *sdl)
     SDL_Quit();
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
-    (void) argc;
-    (void) argv;
-
     sdl_object sdl = {0};
 
     bool sdl_initialized = init_sdl(&sdl);
