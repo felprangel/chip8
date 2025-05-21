@@ -20,6 +20,10 @@ typedef enum {
     PAUSED
 } emulator_state;
 
+typedef struct {
+    emulator_state state;
+} chip8_object;
+
 bool init_sdl(sdl_object *sdl)
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0) {
