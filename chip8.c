@@ -75,6 +75,12 @@ void update_screen(const sdl_object *sdl)
     SDL_RenderPresent(sdl->renderer);
 }
 
+bool init_chip8(chip8_object *chip8)
+{
+    chip8->state = RUNNING;
+    return true;
+}
+
 int main(void)
 {
     sdl_object sdl = {0};
