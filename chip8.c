@@ -48,6 +48,7 @@ bool init_sdl(sdl_object *sdl)
 
 void cleanup(sdl_object *sdl)
 {
+    SDL_DestroyRenderer(sdl->renderer);
     SDL_DestroyWindow(sdl->window);
     SDL_Quit();
 }
