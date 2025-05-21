@@ -5,8 +5,8 @@
 
 #include "SDL.h"
 
-#define WINDOW_HEIGHT 64
-#define WINDOW_WIDTH 32
+#define WINDOW_HEIGHT 32
+#define WINDOW_WIDTH 64
 
 typedef struct {
     SDL_Window *window;
