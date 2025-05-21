@@ -7,6 +7,7 @@
 
 #define WINDOW_HEIGHT 32
 #define WINDOW_WIDTH 64
+#define WINDOW_SCALE_FACTOR 20
 
 typedef struct {
     SDL_Window *window;
@@ -25,8 +26,8 @@ bool init_sdl(sdl_object *sdl)
         "Chip8 Emulator",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        WINDOW_WIDTH,
-        WINDOW_HEIGHT,
+        WINDOW_WIDTH * WINDOW_SCALE_FACTOR,
+        WINDOW_HEIGHT * WINDOW_SCALE_FACTOR,
         no_flags
     );
 
