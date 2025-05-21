@@ -53,7 +53,7 @@ void cleanup(sdl_object *sdl)
     SDL_Quit();
 }
 
-void clean_screen(sdl_object *sdl)
+void clear_screen(sdl_object *sdl)
 {
     SDL_RenderClear(sdl->renderer);
 }
@@ -68,7 +68,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    clean_screen(&sdl);
+    clear_screen(&sdl);
 
     cleanup(&sdl);
 
