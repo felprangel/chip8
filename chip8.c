@@ -90,6 +90,13 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
+    chip8_object chip8 = {0};
+    bool chip8_initialized = init_chip8(&chip8);
+
+    if (!chip8_initialized) {
+        exit(EXIT_FAILURE);
+    }
+
     clear_screen(&sdl);
 
     uint8_t sixty_hertz_in_ms = 16;
