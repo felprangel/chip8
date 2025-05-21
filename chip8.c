@@ -19,7 +19,9 @@ int main(int argc, char *argv[])
     (void) argc;
     (void) argv;
 
-    if (init_sdl()) {
+    bool sdl_initialized = init_sdl();
+
+    if (!sdl_initialized) {
         exit(EXIT_FAILURE);
     }
 
