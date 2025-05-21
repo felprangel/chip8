@@ -71,6 +71,10 @@ int main(void)
 
     clear_screen(&sdl);
 
+    while (true) {
+        update_screen();
+    }
+
     cleanup(&sdl);
 
     exit(EXIT_SUCCESS);
