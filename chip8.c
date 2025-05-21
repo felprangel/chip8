@@ -59,6 +59,11 @@ void clear_screen(sdl_object *sdl)
     SDL_RenderClear(sdl->renderer);
 }
 
+void update_screen(const sdl_object *sdl)
+{
+    SDL_RenderPresent(sdl->renderer);
+}
+
 int main(void)
 {
     sdl_object sdl = {0};
@@ -72,7 +77,7 @@ int main(void)
     clear_screen(&sdl);
 
     while (true) {
-        update_screen();
+        update_screen(&sdl);
     }
 
     cleanup(&sdl);
