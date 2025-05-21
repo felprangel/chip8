@@ -14,6 +14,11 @@ bool init_sdl(void)
     return true;
 }
 
+void cleanup(void)
+{
+    SDL_Quit();
+}
+
 int main(int argc, char *argv[])
 {
     (void) argc;
@@ -24,6 +29,8 @@ int main(int argc, char *argv[])
     if (!sdl_initialized) {
         exit(EXIT_FAILURE);
     }
+
+    cleanup();
 
     exit(EXIT_SUCCESS);
 }
