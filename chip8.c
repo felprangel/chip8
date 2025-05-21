@@ -10,6 +10,7 @@
 
 typedef struct {
     SDL_Window *window;
+    SDL_Renderer *renderer;
 } sdl_object;
 
 bool init_sdl(sdl_object *sdl)
@@ -31,6 +32,14 @@ bool init_sdl(sdl_object *sdl)
 
     if (!sdl->window) {
         SDL_Log("Could not create SDL window %s\n", SDL_GetError());
+        return false;
+    }
+
+    int8_t sdl_driver_index = -1;
+    sdl->renderer = SDL_CreateRenderer(sdl->window, sdl_driver_index, SDL_RENDERER_ACCELERATED);
+
+    if (!sdl->renderer) {
+        SDL_Log("Could not create SDL renderer %s\n", SDL_GetError());
         return false;
     }
 
