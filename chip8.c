@@ -8,6 +8,8 @@
 #define WINDOW_HEIGHT 32
 #define WINDOW_WIDTH 64
 #define WINDOW_SCALE_FACTOR 20
+#define WINDOW_HERTZ 60
+#define WINDOW_UPDATE_MS 1000 / WINDOW_HERTZ
 
 typedef struct {
     SDL_Window *window;
@@ -120,11 +122,9 @@ int main(void)
 
     clear_screen(&sdl);
 
-    uint8_t sixty_hertz_in_ms = 16;
-
     while (chip8.state != QUIT) {
         handle_input(&chip8);
-        SDL_Delay(sixty_hertz_in_ms);
+        SDL_Delay(WINDOW_UPDATE_MS);
         update_screen(&sdl);
     }
 
