@@ -5,17 +5,14 @@
 
 #include "SDL.h"
 
+#define WINDOW_HEIGHT 64
+#define WINDOW_WIDTH 32
+
 typedef struct {
     SDL_Window *window;
 } sdl_object;
 
-typedef struct {
-    uint32_t window_width;
-    uint32_t window_height;
-} config_object;
-
-
-bool init_sdl(sdl_object *sdl, const config_object config)
+bool init_sdl(sdl_object *sdl)
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0) {
         SDL_Log("Could not initialize SDL subsystems! %s\n", SDL_GetError());
@@ -27,8 +24,8 @@ bool init_sdl(sdl_object *sdl, const config_object config)
         "Chip8 Emulator",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        config.window_width,
-        config.window_height,
+        WINDOW_WIDTH,
+        WINDOW_HEIGHT,
         no_flags
     );
 
@@ -52,9 +49,8 @@ int main(int argc, char *argv[])
     (void) argv;
 
     sdl_object sdl = {0};
-    config_object config = {0};
 
-    bool sdl_initialized = init_sdl(&sdl, config);
+    bool sdl_initialized = init_sdl(&sdl);
 
     if (!sdl_initialized) {
         exit(EXIT_FAILURE);
