@@ -55,6 +55,7 @@ void cleanup(sdl_object *sdl)
 
 void clear_screen(sdl_object *sdl)
 {
+    SDL_SetRenderDrawColor(sdl->renderer, 255, 255, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(sdl->renderer);
 }
 
