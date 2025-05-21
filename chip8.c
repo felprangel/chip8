@@ -76,10 +76,10 @@ int main(void)
 
     clear_screen(&sdl);
 
-    uint8_t delay_in_ms = 16;
+    uint8_t sixty_hertz_in_ms = 16;
 
     while (true) {
-        SDL_Delay(delay_in_ms);
+        SDL_Delay(sixty_hertz_in_ms);
         update_screen(&sdl);
     }
 
