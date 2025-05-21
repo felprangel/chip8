@@ -19,7 +19,9 @@ int main(int argc, char *argv[])
     (void) argc;
     (void) argv;
 
+    if (init_sdl()) {
+        exit(EXIT_FAILURE);
+    }
 
-    puts("Hello World");
     exit(EXIT_SUCCESS);
 }
