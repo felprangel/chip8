@@ -14,6 +14,12 @@ typedef struct {
     SDL_Renderer *renderer;
 } sdl_object;
 
+typedef enum {
+    QUIT,
+    RUNNING,
+    PAUSED
+} emulator_state;
+
 bool init_sdl(sdl_object *sdl)
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0) {
