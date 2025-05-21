@@ -84,7 +84,6 @@ bool init_chip8(chip8_object *chip8)
 int main(void)
 {
     sdl_object sdl = {0};
-
     bool sdl_initialized = init_sdl(&sdl);
 
     if (!sdl_initialized) {
