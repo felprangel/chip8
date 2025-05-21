@@ -40,8 +40,9 @@ bool init_sdl(sdl_object *sdl, const config_object config)
     return true;
 }
 
-void cleanup(void)
+void cleanup(sdl_object *sdl)
 {
+    SDL_DestroyWindow(sdl->window);
     SDL_Quit();
 }
 
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    cleanup();
+    cleanup(&sdl);
 
     exit(EXIT_SUCCESS);
 }
