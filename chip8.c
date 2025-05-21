@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 
 #include "SDL.h"
@@ -7,6 +8,12 @@
 typedef struct {
     SDL_Window *window;
 } sdl_object;
+
+typedef struct {
+    uint32_t window_width;
+    uint32_t window_height;
+} config_object;
+
 
 bool init_sdl(sdl_object *sdl, const config_object config)
 {
