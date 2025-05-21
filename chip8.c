@@ -76,7 +76,10 @@ int main(void)
 
     clear_screen(&sdl);
 
+    uint8_t delay_in_ms = 16;
+
     while (true) {
+        SDL_Delay(delay_in_ms);
         update_screen(&sdl);
     }
 
