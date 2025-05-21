@@ -75,6 +75,23 @@ void update_screen(const sdl_object *sdl)
     SDL_RenderPresent(sdl->renderer);
 }
 
+void handle_input(chip8_object *chip8)
+{
+    SDL_Event event;
+
+    while (SDL_PollEvent(&event)) {
+        switch (event.type)
+        {
+        case SDL_QUIT:
+            chip8->state = QUIT;
+            break;
+
+        case SDL_KEYDOWN:
+            break;
+        }
+    }
+}
+
 bool init_chip8(chip8_object *chip8)
 {
     chip8->state = RUNNING;
