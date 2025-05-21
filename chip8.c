@@ -46,14 +46,14 @@ bool init_sdl(sdl_object *sdl)
     return true;
 }
 
-void cleanup(sdl_object *sdl)
+void cleanup(const sdl_object *sdl)
 {
     SDL_DestroyRenderer(sdl->renderer);
     SDL_DestroyWindow(sdl->window);
     SDL_Quit();
 }
 
-void clear_screen(sdl_object *sdl)
+void clear_screen(const sdl_object *sdl)
 {
     SDL_SetRenderDrawColor(sdl->renderer, 255, 255, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(sdl->renderer);
