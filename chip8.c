@@ -95,6 +95,7 @@ int main(void)
     uint8_t sixty_hertz_in_ms = 16;
 
     while (chip8.state != QUIT) {
+        handle_input(&chip8);
         SDL_Delay(sixty_hertz_in_ms);
         update_screen(&sdl);
     }
