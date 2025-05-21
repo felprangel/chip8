@@ -22,6 +22,21 @@ bool init_sdl(sdl_object *sdl, const config_object config)
         return false;
     }
 
+    u_int8_t no_flags = 0;
+    sdl->window = SDL_CreateWindow(
+        "Chip8 Emulator",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        config.window_width,
+        config.window_height,
+        no_flags
+    );
+
+    if (!sdl->window) {
+        SDL_Log("Could not create SDL window %s\n", SDL_GetError());
+        return false;
+    }
+
     return true;
 }
 
