@@ -117,8 +117,13 @@ bool init_chip8(chip8_object *chip8, const char rom_name[])
     return true;
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
+    if (argc < 2) {
+        printf("Rom name parameter needed\n");
+        exit(EXIT_FAILURE);
+    }
+
     sdl_object sdl = {0};
     bool sdl_initialized = init_sdl(&sdl);
 
