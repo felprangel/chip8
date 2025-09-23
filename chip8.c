@@ -108,9 +108,12 @@ void handle_input(chip8_object *chip8)
     }
 }
 
-bool init_chip8(chip8_object *chip8)
+bool init_chip8(chip8_object *chip8, const char rom_name[])
 {
+    const uint32_t entrypoint = 0x200;
+
     chip8->state = RUNNING;
+    chip8->program_counter = entrypoint;
     return true;
 }
 
