@@ -24,6 +24,16 @@ typedef enum {
 
 typedef struct {
     emulator_state state;
+    uint8_t ram[4096];
+    bool display[WINDOW_HEIGHT * WINDOW_WIDTH];
+    uint16_t stack[12];
+    uint8_t V[16];
+    uint16_t I;
+    uint16_t program_counter;
+    uint8_t delay_timer;
+    uint8_t sound_timer;
+    bool keypad[16];
+    char *rom_name;
 } chip8_object;
 
 bool init_sdl(sdl_object *sdl)
