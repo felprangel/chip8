@@ -127,7 +127,9 @@ int main(void)
     }
 
     chip8_object chip8 = {0};
-    bool chip8_initialized = init_chip8(&chip8);
+
+    char *rom_name = argv[1];
+    bool chip8_initialized = init_chip8(&chip8, rom_name);
 
     if (!chip8_initialized) {
         exit(EXIT_FAILURE);
