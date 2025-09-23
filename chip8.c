@@ -108,7 +108,7 @@ void handle_input(chip8_object *chip8)
     }
 }
 
-bool init_chip8(chip8_object *chip8, const char rom_name[])
+bool init_chip8(chip8_object *chip8, char rom_name[])
 {
     const uint32_t entrypoint = 0x200;
 
