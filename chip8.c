@@ -102,6 +102,15 @@ void handle_input(chip8_object *chip8)
                 case SDLK_ESCAPE:
                     chip8->state = QUIT;
                     break;
+                case SDLK_SPACE:
+                    if (chip8->state == RUNNING) {
+                        chip8->state = PAUSED;
+                        puts("======== PAUSED ========");
+                        break;
+                    }
+
+                    chip8->state = RUNNING;
+                    break;
             }
             break;
         }
@@ -189,6 +198,9 @@ int main(int argc, char **argv)
 
     while (chip8.state != QUIT) {
         handle_input(&chip8);
+
+        if (chip8.state == PAUSED) continue;
+
         SDL_Delay(WINDOW_UPDATE_MS);
         update_screen(&sdl);
     }
