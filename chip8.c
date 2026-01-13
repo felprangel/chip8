@@ -33,7 +33,7 @@ typedef struct {
     uint8_t delay_timer;
     uint8_t sound_timer;
     bool keypad[16];
-    char *rom_name;
+    const char *rom_name;
 } chip8_object;
 
 bool init_sdl(sdl_object *sdl)
@@ -187,7 +187,7 @@ int main(int argc, char **argv)
 
     chip8_object chip8 = {0};
 
-    char *rom_name = argv[1];
+    const char *rom_name = argv[1];
     bool chip8_initialized = init_chip8(&chip8, rom_name);
 
     if (!chip8_initialized) {
