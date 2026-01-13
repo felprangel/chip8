@@ -146,6 +146,7 @@ bool init_chip8(chip8_object *chip8, char rom_name[])
         SDL_Log("Rom file %s is invalid or does not exist\n", rom_name);
         return false;
     }
+
     fseek(rom, SEEK_SET, SEEK_END);
     const size_t rom_size = ftell(rom);
     const size_t max_size = sizeof chip8->ram - entrypoint;
