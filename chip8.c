@@ -238,6 +238,11 @@ void emulate_instruction(chip8_object *chip8)
             chip8->V[chip8->instruction.X] = chip8->instruction.NN;
             break;
 
+        case 0x07:
+            // 0x07XNN: Set register VX += NN
+            chip8->V[chip8->instruction.X] += chip8->instruction.NN;
+            break;
+
         case 0x0D:
             // 0x0DXYN: Draw N-height sprite at coords X, Y; Read from memory location I;
             // Screen pixels are XOR'd with sprite bits,
