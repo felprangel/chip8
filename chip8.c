@@ -23,10 +23,20 @@ typedef enum {
 } emulator_state;
 
 typedef struct {
+    uint16_t opcode;
+    uint16_t NNN; // 12 bit address/constant
+    uint8_t NN;   // 8 bit constant
+    uint8_t N;    // 4 bit constant
+    uint8_t X;    // 4 bit register identifier
+    uint8_t Y;    // 4 bit register indentifier
+} instruction_object;
+
+typedef struct {
     emulator_state state;
     uint8_t ram[4096];
     bool display[WINDOW_HEIGHT * WINDOW_WIDTH];
     uint16_t stack[12];
+    uint16_t *stack_pointer;
     uint8_t V[16];
     uint16_t I;
     uint16_t program_counter;
@@ -34,6 +44,7 @@ typedef struct {
     uint8_t sound_timer;
     bool keypad[16];
     const char *rom_name;
+    instruction_object instruction;
 } chip8_object;
 
 bool init_sdl(sdl_object *sdl)
@@ -169,7 +180,41 @@ bool init_chip8(chip8_object *chip8, const char rom_name[])
     chip8->state = RUNNING;
     chip8->program_counter = entrypoint;
     chip8->rom_name = rom_name;
+    chip8->stack_pointer = &chip8->stack[0];
     return true;
+}
+
+void emulate_instruction(chip8_object *chip8)
+{
+    chip8->instruction.opcode = (chip8->ram[chip8->program_counter] << 8) | chip8->ram[chip8->program_counter + 1];
+    chip8->program_counter += 2;
+
+    chip8->instruction.NNN = chip8->instruction.opcode & 0x0FFF;
+    chip8->instruction.NN = chip8->instruction.opcode & 0x0FF;
+    chip8->instruction.N = chip8->instruction.opcode & 0x0F;
+    chip8->instruction.X = (chip8->instruction.opcode >> 8) & 0x0F;
+    chip8->instruction.Y = (chip8->instruction.opcode >> 4) & 0x0F;
+
+    switch ((chip8->instruction.opcode >> 12) & 0x0F)
+    {
+        case 0x00:
+            if (chip8->instruction.NN == 0xE0) {
+                // 0x00E0: Clear the screen
+                memset(chip8->display, false, sizeof chip8->display);
+            } else if (chip8->instruction.NN == 0xEE) {
+                // 0x00EE: Return from subroutine
+                chip8->program_counter = *--chip8->stack_pointer;
+            }
+            break;
+
+        case 0x02:
+            // 0x02NNN: Call subroutine at NNN
+            *chip8->stack_pointer++ = chip8->program_counter;
+            chip8->program_counter = chip8->instruction.NNN;
+            break;
+        default:
+            break;
+    }
 }
 
 int main(int argc, char **argv)
@@ -201,6 +246,8 @@ int main(int argc, char **argv)
         handle_input(&chip8);
 
         if (chip8.state == PAUSED) continue;
+
+        emulate_instruction(&chip8);
 
         SDL_Delay(WINDOW_UPDATE_MS);
         update_screen(&sdl);
