@@ -222,6 +222,11 @@ void emulate_instruction(chip8_object *chip8)
             }
             break;
 
+        case 0x01:
+            // 0x01NNN: Jump to address NNN
+            chip8->program_counter = chip8->instruction.NNN;
+            break;
+
         case 0x02:
             // 0x02NNN: Call subroutine at NNN
             *chip8->stack_pointer++ = chip8->program_counter;
