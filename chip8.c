@@ -99,7 +99,7 @@ void update_screen(const sdl_object sdl, const chip8_object chip8)
 
     for (uint32_t index = 0; index < sizeof chip8.display; index++) {
         rectangle.x = (index % WINDOW_WIDTH) * WINDOW_SCALE_FACTOR;
-        rectangle.y = (index % WINDOW_WIDTH) * WINDOW_SCALE_FACTOR;
+        rectangle.y = (index / WINDOW_WIDTH) * WINDOW_SCALE_FACTOR;
 
         if (chip8.display[index]) {
             SDL_SetRenderDrawColor(sdl.renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
