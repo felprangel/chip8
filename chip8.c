@@ -93,9 +93,24 @@ void clear_screen(const sdl_object *sdl)
     SDL_RenderClear(sdl->renderer);
 }
 
-void update_screen(const sdl_object *sdl)
+void update_screen(const sdl_object sdl, const chip8_object chip8)
 {
-    SDL_RenderPresent(sdl->renderer);
+    SDL_Rect rectangle = {.x = 0, .y = 0, .w = WINDOW_SCALE_FACTOR, .h = WINDOW_SCALE_FACTOR};
+
+    for (uint32_t index = 0; index < sizeof chip8.display; index++) {
+        rectangle.x = (index % WINDOW_WIDTH) * WINDOW_SCALE_FACTOR;
+        rectangle.y = (index % WINDOW_WIDTH) * WINDOW_SCALE_FACTOR;
+
+        if (chip8.display[index]) {
+            SDL_SetRenderDrawColor(sdl.renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+            SDL_RenderFillRect(sdl.renderer, &rectangle);
+        } else {
+            SDL_SetRenderDrawColor(sdl.renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+            SDL_RenderFillRect(sdl.renderer, &rectangle);
+        }
+    }
+
+    SDL_RenderPresent(sdl.renderer);
 }
 
 void handle_input(chip8_object *chip8)
@@ -212,6 +227,53 @@ void emulate_instruction(chip8_object *chip8)
             *chip8->stack_pointer++ = chip8->program_counter;
             chip8->program_counter = chip8->instruction.NNN;
             break;
+
+        case 0x0A:
+            // 0xANNN: Set index register I to NNN
+            chip8->I = chip8->instruction.NNN;
+            break;
+
+        case 0x06:
+            // 0x06XNN: Set register VX to NN
+            chip8->V[chip8->instruction.X] = chip8->instruction.NN;
+            break;
+
+        case 0x0D:
+            // 0x0DXYN: Draw N-height sprite at coords X, Y; Read from memory location I;
+            // Screen pixels are XOR'd with sprite bits,
+            // VF (Carry flag) is set if any screen pixels are set off;
+
+            uint8_t X_coord = chip8->V[chip8->instruction.X] % WINDOW_WIDTH;
+            uint8_t Y_coord = chip8->V[chip8->instruction.Y] % WINDOW_HEIGHT;
+            const uint8_t original_X = X_coord;
+
+            chip8->V[0xF] = 0; // Initialize carry flag to 0
+
+            for (uint8_t index = 0; index < chip8->instruction.N; index++) {
+                const uint8_t sprite_data = chip8->ram[chip8->I + index];
+                X_coord = original_X;
+
+                for (int8_t j = 7; j >= 0; j--) {
+                    bool *pixel = &chip8->display[Y_coord * WINDOW_WIDTH + X_coord];
+                    const bool sprite_bit = (sprite_data & (1 << j));
+
+                    if (sprite_bit && *pixel) {
+                        chip8->V[0xF] = 1;
+                    }
+
+                    *pixel ^= sprite_bit;
+
+                    if (++X_coord >= WINDOW_WIDTH) {
+                        break;
+                    }
+                }
+
+                if (++Y_coord >= WINDOW_HEIGHT) {
+                    break;
+                }
+            }
+
+            break;
         default:
             break;
     }
@@ -250,7 +312,7 @@ int main(int argc, char **argv)
         emulate_instruction(&chip8);
 
         SDL_Delay(WINDOW_UPDATE_MS);
-        update_screen(&sdl);
+        update_screen(sdl, chip8);
     }
 
     cleanup(&sdl);
