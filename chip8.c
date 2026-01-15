@@ -241,6 +241,28 @@ void emulate_instruction(chip8_object *chip8)
             chip8->program_counter = chip8->instruction.NNN;
             break;
 
+        case 0x03:
+            // 0x03XNN: Check if VX == NN, if so, skip the next instruction
+            if (chip8->V[chip8->instruction.X] == chip8->instruction.NN) {
+                chip8->program_counter += 2; // skip next opcode/instruction
+            }
+            break;
+
+        case 0x04:
+            // 0x04NN: Check if VX != NN, if so, skip the next instruction
+            if (chip8->V[chip8->instruction.X] != chip8->instruction.NN) {
+                chip8->program_counter += 2; // skip next opcode/instruction
+            }
+            break;
+
+        case 0x05:
+            if (chip8->instruction.N != 0) break; // Invalid opcode
+            // 0x05XY0: Check if VX == VY, if so, skip the next isntruction
+            if (chip8->V[chip8->instruction.X] == chip8->V[chip8->instruction.Y]) {
+                chip8->program_counter += 2; // skip next opcode/instruction
+            }
+            break;
+
         case 0x0A:
             // 0xANNN: Set index register I to NNN
             chip8->I = chip8->instruction.NNN;
@@ -254,6 +276,74 @@ void emulate_instruction(chip8_object *chip8)
         case 0x07:
             // 0x07XNN: Set register VX += NN
             chip8->V[chip8->instruction.X] += chip8->instruction.NN;
+            break;
+
+        case 0x08:
+            switch (chip8->instruction.N)
+            {
+                case 0:
+                    // 0x08XY0: Set register VX = VY
+                    chip8->V[chip8->instruction.X] = chip8->V[chip8->instruction.Y];
+                    break;
+
+                case 1:
+                    // 0x08XY1: Set register VX |= VY
+                    chip8->V[chip8->instruction.X] |= chip8->V[chip8->instruction.Y];
+                    break;
+
+                case 2:
+                    // 0x08XY2: Set register VX &= VY
+                    chip8->V[chip8->instruction.X] &= chip8->V[chip8->instruction.Y];
+                    break;
+
+                case 3:
+                    // 0x08XY3: Set register VX ^= VY
+                    chip8->V[chip8->instruction.X] ^= chip8->V[chip8->instruction.Y];
+                    break;
+
+                case 4:
+                    // 0x08XY4: Set register VX += VY, set VF to 1 if carry
+                    if ((uint16_t) (chip8->V[chip8->instruction.X] + chip8->V[chip8->instruction.Y]) > 255) {
+                        chip8->V[0xF] = 1;
+                    }
+
+                    chip8->V[chip8->instruction.X] += chip8->V[chip8->instruction.Y];
+                    break;
+
+                case 5:
+                    // 0x08XY5: Set register VX -= VY, set VF to 1 if there is not a borrow (result is positive)
+                    if (chip8->V[chip8->instruction.Y] <= chip8->V[chip8->instruction.X]) {
+                        chip8->V[0xF] = 1;
+                    }
+
+                    chip8->V[chip8->instruction.X] -= chip8->V[chip8->instruction.Y];
+                    break;
+
+                case 6:
+                    // 0x08XY6: Set register VX >>=1, store shifted off bit in VF
+                    chip8->V[0xF] = chip8->V[chip8->instruction.X] & 1;
+                    chip8->V[chip8->instruction.X] >>= 1;
+                    break;
+
+                case 7:
+                    // 0x08XY7: Set register VX = VY - VX, set VF to 1 if there is not a borrow (result is positive)
+                    if (chip8->V[chip8->instruction.X] <= chip8->V[chip8->instruction.Y]) {
+                        chip8->V[0xF] = 1;
+                    }
+
+                    chip8->V[chip8->instruction.X] = chip8->V[chip8->instruction.Y] - chip8->V[chip8->instruction.X];
+                    break;
+
+                case 0xE:
+                    // 0x08XYE: Set register VX <<=1, store shifted off bit in VF
+                    chip8->V[0xF] = (chip8->V[chip8->instruction.X] & 0x80) >> 7;
+                    chip8->V[chip8->instruction.X] <<= 1;
+                    break;
+
+                default:
+                    // Invalid opcode/instruction
+                    break;
+            }
             break;
 
         case 0x0D:
