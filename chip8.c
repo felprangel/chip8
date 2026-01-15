@@ -225,6 +225,8 @@ void emulate_instruction(chip8_object *chip8)
             } else if (chip8->instruction.NN == 0xEE) {
                 // 0x00EE: Return from subroutine
                 chip8->program_counter = *--chip8->stack_pointer;
+            } else {
+                // Uninplemented/invalid opcode, may be 0xNNN for calling machine code routine for RCA1802
             }
             break;
 
