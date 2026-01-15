@@ -10,6 +10,7 @@
 #define WINDOW_SCALE_FACTOR 20
 #define WINDOW_HERTZ 60
 #define WINDOW_UPDATE_MS 1000 / WINDOW_HERTZ
+#define PIXEL_OUTLINE false
 
 typedef struct {
     SDL_Window *window;
@@ -104,6 +105,11 @@ void update_screen(const sdl_object sdl, const chip8_object chip8)
         if (chip8.display[index]) {
             SDL_SetRenderDrawColor(sdl.renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
             SDL_RenderFillRect(sdl.renderer, &rectangle);
+
+            if (PIXEL_OUTLINE) {
+                SDL_SetRenderDrawColor(sdl.renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+                SDL_RenderDrawRect(sdl.renderer, &rectangle);
+            }
         } else {
             SDL_SetRenderDrawColor(sdl.renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
             SDL_RenderFillRect(sdl.renderer, &rectangle);
