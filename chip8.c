@@ -346,6 +346,18 @@ void emulate_instruction(chip8_object *chip8)
             }
             break;
 
+        case 0x09:
+            // 0x09XY0: Check if VX != VY; Skip next instruction if true
+            if (chip8->V[chip8->instruction.X] != chip8->V[chip8->instruction.Y]) {
+                chip8->program_counter += 2;
+            }
+            break;
+
+        case 0x0B:
+            // 0x0BNNN: Jump to V0 + NNN
+            chip8->program_counter = chip8->V[0] + chip8->instruction.NNN;
+            break;
+
         case 0x0D:
             // 0x0DXYN: Draw N-height sprite at coords X, Y; Read from memory location I;
             // Screen pixels are XOR'd with sprite bits,
