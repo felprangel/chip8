@@ -408,6 +408,25 @@ void emulate_instruction(chip8_object *chip8)
             }
 
             break;
+
+        case 0x0E:
+            if (chip8->instruction.NN == 0x9E) {
+                // 0xEX9E: Skip next instruction if key in VX is pressed
+                uint8_t VX = chip8->V[chip8->instruction.X];
+                if (chip8->keypad[VX]) {
+                    chip8->program_counter += 2;
+                }
+                break;
+            }
+            if (chip8->instruction.NN == 0xA1) {
+                // 0xEXA1: Skip next instruction if key in VX is not pressed
+                uint8_t VX = chip8->V[chip8->instruction.X];
+                if (!chip8->keypad[VX]) {
+                    chip8->program_counter += 2;
+                }
+                break;
+            }
+
         default:
             break;
     }
