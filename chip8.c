@@ -111,10 +111,12 @@ void update_screen(const sdl_object sdl, const chip8_object chip8)
                 SDL_SetRenderDrawColor(sdl.renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
                 SDL_RenderDrawRect(sdl.renderer, &rectangle);
             }
-        } else {
-            SDL_SetRenderDrawColor(sdl.renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-            SDL_RenderFillRect(sdl.renderer, &rectangle);
+
+            continue;
         }
+
+        SDL_SetRenderDrawColor(sdl.renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+        SDL_RenderFillRect(sdl.renderer, &rectangle);
     }
 
     SDL_RenderPresent(sdl.renderer);
@@ -225,12 +227,16 @@ void emulate_instruction(chip8_object *chip8)
             if (chip8->instruction.NN == 0xE0) {
                 // 0x00E0: Clear the screen
                 memset(chip8->display, false, sizeof chip8->display);
-            } else if (chip8->instruction.NN == 0xEE) {
+                break;
+            }
+
+            if (chip8->instruction.NN == 0xEE) {
                 // 0x00EE: Return from subroutine
                 chip8->program_counter = *--chip8->stack_pointer;
-            } else {
-                // Uninplemented/invalid opcode, may be 0xNNN for calling machine code routine for RCA1802
+                break;
             }
+
+            // Uninplemented/invalid opcode, may be 0xNNN for calling machine code routine for RCA1802
             break;
 
         case 0x01:
