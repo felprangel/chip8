@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include "SDL.h"
 
@@ -216,6 +217,8 @@ void emulate_instruction(chip8_object *chip8)
     chip8->instruction.X = (chip8->instruction.opcode >> 8) & 0x0F;
     chip8->instruction.Y = (chip8->instruction.opcode >> 4) & 0x0F;
 
+    srand(time(NULL));
+
     switch ((chip8->instruction.opcode >> 12) & 0x0F)
     {
         case 0x00:
@@ -356,6 +359,11 @@ void emulate_instruction(chip8_object *chip8)
         case 0x0B:
             // 0x0BNNN: Jump to V0 + NNN
             chip8->program_counter = chip8->V[0] + chip8->instruction.NNN;
+            break;
+
+        case 0x0C:
+            // 0x0CXNN: Set register VX = rand() % 256 & NN (bitwise AND)
+            chip8->V[chip8->instruction.X] = (rand() % 256) & chip8->instruction.NN;
             break;
 
         case 0x0D:
