@@ -272,11 +272,6 @@ void emulate_instruction(chip8_object *chip8)
             }
             break;
 
-        case 0x0A:
-            // 0xANNN: Set index register I to NNN
-            chip8->I = chip8->instruction.NNN;
-            break;
-
         case 0x06:
             // 0x06XNN: Set register VX to NN
             chip8->V[chip8->instruction.X] = chip8->instruction.NN;
@@ -360,6 +355,11 @@ void emulate_instruction(chip8_object *chip8)
             if (chip8->V[chip8->instruction.X] != chip8->V[chip8->instruction.Y]) {
                 chip8->program_counter += 2;
             }
+            break;
+
+        case 0x0A:
+            // 0xANNN: Set index register I to NNN
+            chip8->I = chip8->instruction.NNN;
             break;
 
         case 0x0B:
