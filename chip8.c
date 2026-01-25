@@ -427,6 +427,17 @@ void emulate_instruction(chip8_object *chip8)
                 break;
             }
 
+        case 0x0F:
+            switch (chip8->instruction.NN)
+            {
+                case 0x0A:
+                    // 0xFX0A: VX = get_key()
+                    break;
+
+                default:
+                    break;
+            }
+
         default:
             break;
     }
