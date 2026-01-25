@@ -426,6 +426,7 @@ void emulate_instruction(chip8_object *chip8)
                 }
                 break;
             }
+            break;
 
         case 0x0F:
             switch (chip8->instruction.NN)
@@ -437,6 +438,7 @@ void emulate_instruction(chip8_object *chip8)
                 default:
                     break;
             }
+            break;
 
         default:
             break;
