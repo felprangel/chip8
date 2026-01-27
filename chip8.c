@@ -355,6 +355,8 @@ void emulate_instruction(chip8_object *chip8)
 
     srand(time(NULL));
 
+    bool positive_result = false;
+
     switch ((chip8->instruction.opcode >> 12) & 0x0F)
     {
         case 0x00:
@@ -450,9 +452,8 @@ void emulate_instruction(chip8_object *chip8)
 
                 case 5:
                     // 0x08XY5: Set register VX -= VY, set VF to 1 if there is not a borrow (result is positive)
-                    if (chip8->V[chip8->instruction.Y] <= chip8->V[chip8->instruction.X]) {
-                        chip8->V[0xF] = 1;
-                    }
+                    positive_result = chip8->V[chip8->instruction.Y] <= chip8->V[chip8->instruction.X];
+                    chip8->V[0xF] = positive_result;
 
                     chip8->V[chip8->instruction.X] -= chip8->V[chip8->instruction.Y];
                     break;
@@ -465,9 +466,8 @@ void emulate_instruction(chip8_object *chip8)
 
                 case 7:
                     // 0x08XY7: Set register VX = VY - VX, set VF to 1 if there is not a borrow (result is positive)
-                    if (chip8->V[chip8->instruction.X] <= chip8->V[chip8->instruction.Y]) {
-                        chip8->V[0xF] = 1;
-                    }
+                    positive_result = chip8->V[chip8->instruction.X] <= chip8->V[chip8->instruction.Y];
+                    chip8->V[0xF] = positive_result;
 
                     chip8->V[chip8->instruction.X] = chip8->V[chip8->instruction.Y] - chip8->V[chip8->instruction.X];
                     break;
