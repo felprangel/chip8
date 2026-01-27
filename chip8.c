@@ -565,8 +565,79 @@ void emulate_instruction(chip8_object *chip8)
         case 0x0F:
             switch (chip8->instruction.NN)
             {
+                case 0x07:
+                    // 0xFX07: VX = delay timer
+                    chip8->V[chip8->instruction.X] = chip8->delay_timer;
+                    break;
+
                 case 0x0A:
-                    // 0xFX0A: VX = get_key()
+                    // 0xFX0A: VX = get_key(); Await until a keypress, and store in VX
+                    bool any_key_pressed = false;
+                    for (uint8_t index = 0; index < sizeof chip8->keypad; index++) {
+                        if (chip8->keypad[index]) {
+                            chip8->V[chip8->instruction.X] = index;
+                            any_key_pressed = true;
+                            break;
+                        }
+                    }
+
+                    if (!any_key_pressed) {
+                        chip8->program_counter -= 2;
+                    }
+
+                    break;
+
+                case 0x15:
+                    // 0xFX15: delay timer = VX
+                    chip8->delay_timer = chip8->V[chip8->instruction.X];
+                    break;
+
+                case 0x18:
+                    // 0xFX18: sound timer = VX
+                    chip8->sound_timer = chip8->V[chip8->instruction.X];
+                    break;
+
+                case 0x1E:
+                    // 0xFX1E: I += VX; Add VX to register
+                    chip8->I += chip8->V[chip8->instruction.X];
+                    break;
+
+                case 0x29:
+                    // 0xFX29: Set register I to sprite location in memory for character in VX
+                    chip8->I = chip8->V[chip8->instruction.X] * 5;
+                    break;
+
+                case 0x33:
+                    // 0xFX33: Store binary coded decimal representation of VX at memory offset from I
+                    // I = hundreds
+                    // I + 1 = tens
+                    // I + 2 = ones
+
+                    uint8_t bcd = chip8->V[chip8->instruction.X];
+
+                    chip8->ram[chip8->I + 2] = bcd % 10;
+
+                    bcd /= 10;
+
+                    chip8->ram[chip8->I + 1] = bcd % 10;
+
+                    bcd /= 10;
+
+                    chip8->ram[chip8->I] = bcd;
+                    break;
+
+                case 0x55:
+                    // 0xFX55: Register dump V0-VX, inclusive to memory offset from I
+                    for (uint8_t index = 0; index <= chip8->instruction.X; index++) {
+                        chip8->ram[chip8->I + index] = chip8->V[index];
+                    }
+                    break;
+
+                case 0x65:
+                    // 0xFX65: Register load V0-VX, inclusive to memory offset from I
+                    for (uint8_t index = 0; index <= chip8->instruction.X; index++) {
+                        chip8->V[index] = chip8->ram[chip8->I + index];
+                    }
                     break;
 
                 default:
