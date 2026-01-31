@@ -12,6 +12,7 @@
 #define WINDOW_HERTZ 60
 #define WINDOW_UPDATE_MS 1000 / WINDOW_HERTZ
 #define PIXEL_OUTLINE false
+#define INSTRUCTIONS_PER_SECOND 500
 
 typedef struct {
     SDL_Window *window;
@@ -120,6 +121,17 @@ void update_screen(const sdl_object sdl, const chip8_object chip8)
     }
 
     SDL_RenderPresent(sdl.renderer);
+}
+
+void update_timers(chip8_object *chip8)
+{
+    if (chip8->delay_timer > 0) {
+        chip8->delay_timer--;
+    }
+
+    if (chip8->sound_timer > 0) {
+        chip8->sound_timer--;
+    }
 }
 
 void handle_input(chip8_object *chip8)
@@ -680,10 +692,20 @@ int main(int argc, char **argv)
 
         if (chip8.state == PAUSED) continue;
 
-        emulate_instruction(&chip8);
+        const uint64_t start_frame = SDL_GetPerformanceCounter();
 
-        SDL_Delay(WINDOW_UPDATE_MS);
+        for (uint32_t index = 0; index < INSTRUCTIONS_PER_SECOND / WINDOW_HERTZ; index++)
+        {
+            emulate_instruction(&chip8);
+        }
+
+        const uint64_t end_frame = SDL_GetPerformanceCounter();
+
+        const double time_elapsed = (double)((end_frame - start_frame) / 1000) / SDL_GetPerformanceFrequency();
+
+        SDL_Delay(WINDOW_UPDATE_MS > time_elapsed ? WINDOW_UPDATE_MS - time_elapsed : 0);
         update_screen(sdl, chip8);
+        update_timers(&chip8);
     }
 
     cleanup(&sdl);
