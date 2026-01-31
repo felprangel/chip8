@@ -701,7 +701,7 @@ int main(int argc, char **argv)
 
         const uint64_t end_frame = SDL_GetPerformanceCounter();
 
-        const double time_elapsed = (double)((end_frame - start_frame) / 1000) / SDL_GetPerformanceFrequency();
+        const double time_elapsed = (double)((end_frame - start_frame) * 1000) / SDL_GetPerformanceFrequency();
 
         SDL_Delay(WINDOW_UPDATE_MS > time_elapsed ? WINDOW_UPDATE_MS - time_elapsed : 0);
         update_screen(sdl, chip8);
