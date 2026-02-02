@@ -12,11 +12,16 @@
 #define WINDOW_HERTZ 60
 #define WINDOW_UPDATE_MS 1000 / WINDOW_HERTZ
 #define PIXEL_OUTLINE false
-#define INSTRUCTIONS_PER_SECOND 500
+#define INSTRUCTIONS_PER_SECOND 700
+#define SOUND_WAVE_FREQUENCY 440
+#define AUDIO_SAMPLE_RATE 44100
+#define VOLUME 3000
 
 typedef struct {
     SDL_Window *window;
     SDL_Renderer *renderer;
+    SDL_AudioSpec want, have;
+    SDL_AudioDeviceID device;
 } sdl_object;
 
 typedef enum {
@@ -50,6 +55,20 @@ typedef struct {
     instruction_object instruction;
 } chip8_object;
 
+void audio_callback(void *userdata, uint8_t *stream, int length)
+{
+    printf(userdata);
+    int16_t *audio_data = (int16_t *)stream;
+    static uint32_t running_sample_index = 0;
+
+    const int32_t square_wave_period = AUDIO_SAMPLE_RATE / SOUND_WAVE_FREQUENCY;
+    const int32_t half_square_wave_period = square_wave_period / 2;
+
+    for (int index = 0; index < length / 2; index++) {
+        audio_data[index] = ((running_sample_index++ / half_square_wave_period) % 2) ? VOLUME : -VOLUME;
+    }
+}
+
 bool init_sdl(sdl_object *sdl)
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) != 0) {
@@ -80,6 +99,26 @@ bool init_sdl(sdl_object *sdl)
         return false;
     }
 
+    sdl->want = (SDL_AudioSpec){
+        .freq = 44100,
+        .format = AUDIO_S16LSB,
+        .channels = 1,
+        .samples = 512,
+        .callback = audio_callback,
+    };
+
+    sdl->device = SDL_OpenAudioDevice(NULL, 0, &sdl->want, &sdl->have, 0);
+
+    if (sdl->device == 0) {
+        SDL_Log("Could not get Audio Device %s\n", SDL_GetError());
+        return false;
+    }
+
+    if ((sdl->want.channels != sdl->have.channels) || (sdl->want.format != sdl->have.format)) {
+        SDL_Log("Could not get desired Audio Spec\n");
+        return false;
+    }
+
     return true;
 }
 
@@ -87,6 +126,7 @@ void cleanup(const sdl_object *sdl)
 {
     SDL_DestroyRenderer(sdl->renderer);
     SDL_DestroyWindow(sdl->window);
+    SDL_CloseAudioDevice(sdl->device);
     SDL_Quit();
 }
 
@@ -123,7 +163,7 @@ void update_screen(const sdl_object sdl, const chip8_object chip8)
     SDL_RenderPresent(sdl.renderer);
 }
 
-void update_timers(chip8_object *chip8)
+void update_timers(const sdl_object sdl, chip8_object *chip8)
 {
     if (chip8->delay_timer > 0) {
         chip8->delay_timer--;
@@ -131,7 +171,12 @@ void update_timers(chip8_object *chip8)
 
     if (chip8->sound_timer > 0) {
         chip8->sound_timer--;
+        SDL_PauseAudioDevice(sdl.device, 0); // Play sound
+
+        return;
     }
+
+    SDL_PauseAudioDevice(sdl.device, 1); // Pause sound
 }
 
 void handle_input(chip8_object *chip8)
@@ -705,7 +750,7 @@ int main(int argc, char **argv)
 
         SDL_Delay(WINDOW_UPDATE_MS > time_elapsed ? WINDOW_UPDATE_MS - time_elapsed : 0);
         update_screen(sdl, chip8);
-        update_timers(&chip8);
+        update_timers(sdl, &chip8);
     }
 
     cleanup(&sdl);
