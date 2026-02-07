@@ -500,39 +500,38 @@ void emulate_instruction(chip8_object *chip8)
 
                 case 4:
                     // 0x08XY4: Set register VX += VY, set VF to 1 if carry
-                    if ((uint16_t) (chip8->V[chip8->instruction.X] + chip8->V[chip8->instruction.Y]) > 255) {
-                        chip8->V[0xF] = 1;
-                    }
+                    const bool carry = ((uint16_t)(chip8->V[chip8->instruction.X] + chip8->V[chip8->instruction.Y]) > 255);
 
                     chip8->V[chip8->instruction.X] += chip8->V[chip8->instruction.Y];
+                    chip8->V[0xF] = carry;
                     break;
 
                 case 5:
                     // 0x08XY5: Set register VX -= VY, set VF to 1 if there is not a borrow (result is positive)
-                    positive_result = chip8->V[chip8->instruction.Y] <= chip8->V[chip8->instruction.X];
-                    chip8->V[0xF] = positive_result;
+                    positive_result = (chip8->V[chip8->instruction.Y] <= chip8->V[chip8->instruction.X]);
 
                     chip8->V[chip8->instruction.X] -= chip8->V[chip8->instruction.Y];
+                    chip8->V[0xF] = positive_result;
                     break;
 
                 case 6:
                     // 0x08XY6: Set register VX >>=1, store shifted off bit in VF
-                    chip8->V[0xF] = chip8->V[chip8->instruction.X] & 1;
                     chip8->V[chip8->instruction.X] >>= 1;
+                    chip8->V[0xF] = chip8->V[chip8->instruction.X] & 1;
                     break;
 
                 case 7:
                     // 0x08XY7: Set register VX = VY - VX, set VF to 1 if there is not a borrow (result is positive)
-                    positive_result = chip8->V[chip8->instruction.X] <= chip8->V[chip8->instruction.Y];
-                    chip8->V[0xF] = positive_result;
+                    positive_result = (chip8->V[chip8->instruction.X] <= chip8->V[chip8->instruction.Y]);
 
                     chip8->V[chip8->instruction.X] = chip8->V[chip8->instruction.Y] - chip8->V[chip8->instruction.X];
+                    chip8->V[0xF] = positive_result;
                     break;
 
                 case 0xE:
                     // 0x08XYE: Set register VX <<=1, store shifted off bit in VF
-                    chip8->V[0xF] = (chip8->V[chip8->instruction.X] & 0x80) >> 7;
                     chip8->V[chip8->instruction.X] <<= 1;
+                    chip8->V[0xF] = (chip8->V[chip8->instruction.X] & 0x80) >> 7;
                     break;
 
                 default:
