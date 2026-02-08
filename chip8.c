@@ -688,16 +688,14 @@ void emulate_instruction(chip8_object *chip8)
                 case 0x55:
                     // 0xFX55: Register dump V0-VX, inclusive to memory offset from I
                     for (uint8_t index = 0; index <= chip8->instruction.X; index++) {
-                        chip8->ram[chip8->I + index] = chip8->V[index];
-                        chip8->I++;
+                        chip8->ram[chip8->I++] = chip8->V[index];
                     }
                     break;
 
                 case 0x65:
                     // 0xFX65: Register load V0-VX, inclusive to memory offset from I
                     for (uint8_t index = 0; index <= chip8->instruction.X; index++) {
-                        chip8->V[index] = chip8->ram[chip8->I + index];
-                        chip8->I++;
+                        chip8->V[index] = chip8->ram[chip8->I++];
                     }
                     break;
 
