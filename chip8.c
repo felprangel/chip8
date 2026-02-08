@@ -486,16 +486,19 @@ void emulate_instruction(chip8_object *chip8)
                 case 1:
                     // 0x08XY1: Set register VX |= VY
                     chip8->V[chip8->instruction.X] |= chip8->V[chip8->instruction.Y];
+                    chip8->V[0xF] = 0;
                     break;
 
                 case 2:
                     // 0x08XY2: Set register VX &= VY
                     chip8->V[chip8->instruction.X] &= chip8->V[chip8->instruction.Y];
+                    chip8->V[0xF] = 0;
                     break;
 
                 case 3:
                     // 0x08XY3: Set register VX ^= VY
                     chip8->V[chip8->instruction.X] ^= chip8->V[chip8->instruction.Y];
+                    chip8->V[0xF] = 0;
                     break;
 
                 case 4:
@@ -686,6 +689,7 @@ void emulate_instruction(chip8_object *chip8)
                     // 0xFX55: Register dump V0-VX, inclusive to memory offset from I
                     for (uint8_t index = 0; index <= chip8->instruction.X; index++) {
                         chip8->ram[chip8->I + index] = chip8->V[index];
+                        chip8->I++;
                     }
                     break;
 
@@ -693,6 +697,7 @@ void emulate_instruction(chip8_object *chip8)
                     // 0xFX65: Register load V0-VX, inclusive to memory offset from I
                     for (uint8_t index = 0; index <= chip8->instruction.X; index++) {
                         chip8->V[index] = chip8->ram[chip8->I + index];
+                        chip8->I++;
                     }
                     break;
 
