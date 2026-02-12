@@ -519,8 +519,10 @@ void emulate_instruction(chip8_object *chip8)
 
                 case 6:
                     // 0x08XY6: Set register VX >>=1, store shifted off bit in VF
-                    chip8->V[chip8->instruction.X] >>= 1;
-                    chip8->V[0xF] = chip8->V[chip8->instruction.X] & 1;
+                    positive_result = chip8->V[chip8->instruction.Y] & 1;
+                    chip8->V[chip8->instruction.X] = chip8->V[chip8->instruction.Y] >> 1;
+
+                    chip8->V[0xF] = positive_result;
                     break;
 
                 case 7:
@@ -533,8 +535,10 @@ void emulate_instruction(chip8_object *chip8)
 
                 case 0xE:
                     // 0x08XYE: Set register VX <<=1, store shifted off bit in VF
-                    chip8->V[chip8->instruction.X] <<= 1;
-                    chip8->V[0xF] = (chip8->V[chip8->instruction.X] & 0x80) >> 7;
+                    positive_result = (chip8->V[chip8->instruction.Y] & 0x80) >> 7;
+                    chip8->V[chip8->instruction.X] = chip8->V[chip8->instruction.Y] << 1;
+
+                    chip8->V[0xF] = positive_result;
                     break;
 
                 default:
