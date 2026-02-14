@@ -635,10 +635,13 @@ void emulate_instruction(chip8_object *chip8)
 
                 case 0x0A:
                     // 0xFX0A: VX = get_key(); Await until a keypress, and store in VX
-                    bool any_key_pressed = false;
+                    static bool any_key_pressed = false;
+                    static int8_t key = -1;
+
                     for (uint8_t index = 0; index < sizeof chip8->keypad; index++) {
                         if (chip8->keypad[index]) {
-                            chip8->V[chip8->instruction.X] = index;
+                            key = index;
+
                             any_key_pressed = true;
                             break;
                         }
@@ -646,7 +649,17 @@ void emulate_instruction(chip8_object *chip8)
 
                     if (!any_key_pressed) {
                         chip8->program_counter -= 2;
+                        break;
                     }
+
+                    if (chip8->keypad[key]) {
+                        chip8->program_counter -= 2;
+                        break;
+                    }
+
+                    chip8->V[chip8->instruction.X] = key;
+                    key = -1;
+                    any_key_pressed = false;
 
                     break;
 
